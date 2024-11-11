@@ -34,7 +34,7 @@
 
                 if ($result && $result->num_rows > 0) {
                     $row = $result->fetch_assoc();
-                    if (password_verify($senha, $row['senha_usuario'])) {
+                    if (password_verify($senha, $row['SENHA_USUARIO'])) {
                         // Configurar a sessão
                         $_SESSION['email'] = $email; // Salva o email na sessão
                         header("Location: index.php"); // Redireciona para a página inicial

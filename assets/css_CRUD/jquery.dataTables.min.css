@@ -32,7 +32,6 @@ table.dataTable thead .sorting_asc,
 table.dataTable thead .sorting_desc,
 table.dataTable thead .sorting {
     cursor: pointer;
-    *cursor: hand
 }
 
 table.dataTable thead .sorting {
@@ -284,7 +283,6 @@ table.dataTable td {
 .dataTables_wrapper {
     position: relative;
     clear: both;
-    *zoom: 1;
     zoom: 1
 }
 
@@ -322,14 +320,13 @@ table.dataTable td {
     text-align: center;
     text-decoration: none !important;
     cursor: pointer;
-    *cursor: hand;
-    color: #333 !important;
+    color: #fff !important;
     border: 1px solid transparent
 }
 
 .dataTables_wrapper .dataTables_paginate .paginate_button.current,
 .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
-    color: #333 !important;
+    color: #fff !important;
     border: 1px solid #cacaca;
     background-color: #fff;
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #fff), color-stop(100%, #dcdcdc));
@@ -337,14 +334,14 @@ table.dataTable td {
     background: -moz-linear-gradient(top, #fff 0%, #dcdcdc 100%);
     background: -ms-linear-gradient(top, #fff 0%, #dcdcdc 100%);
     background: -o-linear-gradient(top, #fff 0%, #dcdcdc 100%);
-    background: linear-gradient(to bottom, #fff 0%, #dcdcdc 100%)
+    background: #222
 }
 
 .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
 .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover,
 .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:active {
     cursor: default;
-    color: #666 !important;
+    color: #fff !important;
     border: 1px solid transparent;
     background: transparent;
     box-shadow: none
@@ -407,7 +404,6 @@ table.dataTable td {
 }
 
 .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody {
-    *margin-top: -1px;
     -webkit-overflow-scrolling: touch
 }
 
