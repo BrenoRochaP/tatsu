@@ -3,11 +3,11 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Meta tag para responsividade -->
     <title>Cadastro Tatsu</title>
     <link rel="icon" href="./assets/images/dragaoicone.png" type="image/x-icon">
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css'>
     <link rel="stylesheet" href="./assets/css/style2.css">
-
 </head>
 
 <body>
@@ -20,26 +20,27 @@
         $_SESSION['email'] = $email;
 
         header("Location: index.php");
-        $nome = $_POST['nome']; 
-        $email = $_POST['email']; 
-        $senha = password_hash($_POST['senha'], PASSWORD_DEFAULT); 
-        $data_nasc = $_POST['data_nasc']; 
-        $genero = $_POST['genero']; 
-        $endereco = $_POST['endereco']; 
-        $estado = $_POST['estado']; 
-    
+        $nome = $_POST['nome'];
+        $email = $_POST['email'];
+        $senha = password_hash($_POST['senha'], PASSWORD_DEFAULT);
+        $data_nasc = $_POST['data_nasc'];
+        $genero = $_POST['genero'];
+        $endereco = $_POST['endereco'];
+        $estado = $_POST['estado'];
+
         $sql = "INSERT INTO usuario(NOME_USUARIO, EMAIL_USUARIO, SENHA_USUARIO, DATA_NASC, GENERO, ENDERECO, ESTADO)
- 
-	VALUES ('$nome', '$email', '$senha', '$data_nasc', '$genero', '$endereco', '$estado')";
-    
-        if ($conn->query($sql) === TRUE) { 
+        VALUES ('$nome', '$email', '$senha', '$data_nasc', '$genero', '$endereco', '$estado')";
+
+        if ($conn->query($sql) === TRUE) {
             echo "Cadastro realizado com sucesso!";
         } else {
+            echo "Erro: " . $conn->error;
         }
     }
     ?>
     <!-- FIM PHP -->
-<!-- INICIO HTML -->
+
+    <!-- INICIO HTML -->
     <a href="index.php" class="btn" data-btn>Voltar</a>
     <br />
     <section class="container">
@@ -92,6 +93,7 @@
                     <div class="select-box">
                         <select name="estado">
                             <option hidden="">Estado</option>
+                            <!-- Lista de estados -->
                             <option value="AC">Acre</option>
                             <option value="AL">Alagoas</option>
                             <option value="AP">Amapá</option>
@@ -130,7 +132,6 @@
                     style="text-decoration: none; color: white;">
                     Login</a></p>
         </form>
-
     </section>
 
     <!-- SCRIPTS DO JS -->

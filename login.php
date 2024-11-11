@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Adicionando meta tag -->
     <title>Login Tatsu</title>
     <link rel="icon" href="./assets/images/dragaoicone.png" type="image/x-icon">
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css'>
@@ -53,7 +54,7 @@
     ?>
     <!-- FIM PHP -->
 
-    <a href="index.php" class="btn" data-btn>Voltar</a><br />
+    <a href="index.php" class="btn" daAta-btn>Voltar</a><br />
     <section class="container">
         <header>Entrar</header>
         <form class="form" action="login.php" method="POST">
