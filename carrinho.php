@@ -2,8 +2,15 @@
 session_start();
 include('data/conexao.php');
 
+// Verifica se a sessão está ativa
+if (!isset($_SESSION['email'])) {
+    echo '<script>alert("Você precisa estar logado para acessar esta página.");</script>';
+    echo '<script>window.location.href = "login.php";</script>';
+    exit();
+}
+
 // Simulando um usuário logado
-$usuario_id = 1; // Alterar para o ID real do usuário
+$email = $_SESSION['email'];
 
 // Inicializa o carrinho se não existir
 if (!isset($_SESSION['carrinho'])) {
@@ -15,18 +22,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_id']) && isse
     $product_id = intval($_POST['product_id']);
     $quantidade = intval($_POST['quantidade']);
 
-    // Adiciona ou atualiza a quantidade do produto no carrinho
     if (isset($_SESSION['carrinho'][$product_id])) {
-        $_SESSION['carrinho'][$product_id] += $quantidade; // Atualiza a quantidade
+        $_SESSION['carrinho'][$product_id] += $quantidade;
     } else {
-        $_SESSION['carrinho'][$product_id] = $quantidade; // Adiciona novo produto
+        $_SESSION['carrinho'][$product_id] = $quantidade;
     }
 }
 
 // Processa a remoção de produtos do carrinho
 if (isset($_POST['remove_id'])) {
     $remove_id = intval($_POST['remove_id']);
-    unset($_SESSION['carrinho'][$remove_id]); // Remove o produto
+    unset($_SESSION['carrinho'][$remove_id]);
 }
 
 // Processa a atualização da quantidade do produto no carrinho
@@ -34,9 +40,9 @@ if (isset($_POST['update_id']) && isset($_POST['update_quantidade'])) {
     $update_id = intval($_POST['update_id']);
     $update_quantidade = intval($_POST['update_quantidade']);
     if ($update_quantidade > 0) {
-        $_SESSION['carrinho'][$update_id] = $update_quantidade; // Atualiza a quantidade
+        $_SESSION['carrinho'][$update_id] = $update_quantidade;
     } else {
-        unset($_SESSION['carrinho'][$update_id]); // Remove se a quantidade for 0
+        unset($_SESSION['carrinho'][$update_id]);
     }
 }
 
@@ -63,7 +69,6 @@ $products = [
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carrinho Tatsu Sushi Bar</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
     <link rel="icon" href="./assets/images/dragaoicone.png" type="image/x-icon">
     <style>
         body {
@@ -154,7 +159,6 @@ $products = [
         }
 
         .btnvoltar {
-            z-index: 10;
             position: relative;
             background-image: linear-gradient(to right bottom, hsl(0, 100%, 50%), hsl(0, 100%, 13%), hsl(0, 100%, 58%));
             color: rgb(255, 255, 255);
@@ -176,12 +180,10 @@ $products = [
         }
 
         .btnvoltar::before {
-            font-family: 'Montserrat', sans-serif;
-            text-decoration: none;
             content: "";
             position: absolute;
-            top: var(--top, 50%);
-            left: var(--left, 50%);
+            top: 50%;
+            left: 50%;
             width: 100%;
             padding-block-end: 100%;
             background-color: rgb(255, 66, 66);
@@ -203,7 +205,7 @@ $products = [
     ?>
     <center>
         <div class="header">
-            <h1>Menu Tatsu Sushi bar</h1>
+            <h1>Menu Tatsu Sushi Bar</h1>
         </div>
     </center>
     <div class="carrinho">
@@ -235,20 +237,15 @@ $products = [
                 <button type="submit">Ver Menu</button>
             </form>
         <?php else: ?>
-            <div style="display: flex; gap: 10px;"> <!-- Adiciona um espaço entre os botões -->
-            <form id="pedidoForm" action="finalizar_pedido.php" method="post" onsubmit="return handleFormSubmit();">
+            <div style="display: flex; gap: 10px;">
+                <form id="pedidoForm" action="finalizar_pedido.php" method="post" onsubmit="return handleFormSubmit();">
                     <button type="submit" id="btn-fazer-pedido">Fazer Pedido</button>
                 </form>
 
                 <script>
                     function handleFormSubmit() {
-                        // Envia o formulário para finalizar_pedido.php
                         document.getElementById('pedidoForm').submit();
-
-                        // Redireciona para endereco.php
                         window.location.href = 'endereco.php';
-
-                        // Retorna false para evitar o envio padrão do formulário
                         return false;
                     }
                 </script>

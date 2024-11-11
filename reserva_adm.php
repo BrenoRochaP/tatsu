@@ -1,13 +1,21 @@
-<?php session_start();
+<?php 
+session_start();
 include('data/conexao.php');
 
+// Incluindo o autoload do Composer
+require 'vendor/autoload.php'; 
+
+// Usando as classes do PHPMailer
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
 // Função para enviar e-mail de confirmação
-function enviarEmailConfirmacao($email, $nome)
-{
-    require 'vendor/autoload.php'; // Inclua o autoload do Composer
-    $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+function enviarEmailConfirmacao($email, $nome) {
+    $mail = new PHPMailer(true); // Instancia o PHPMailer
     try {
-        // Configurações do servidor
+        // Habilitando o debug do SMTP (opcional, para depuração)
+        $mail->SMTPDebug = SMTP::DEBUG_SERVER; // Para depuração, pode ser removido em produção
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
@@ -25,8 +33,13 @@ function enviarEmailConfirmacao($email, $nome)
         $mail->Subject = 'Confirmação de Reserva';
         $mail->Body = "Olá $nome,<br> Sua reserva foi confirmada com sucesso!<br> Obrigado por escolher o Reserva Tatsu.";
         $mail->AltBody = "Olá $nome, Sua reserva foi confirmada com sucesso! Obrigado por escolher o Reserva Tatsu.";
-        $mail->send();
-        return true; // Retorna verdadeiro se o e-mail foi enviado com sucesso
+
+        // Envio do e-mail
+        if($mail->send()) {
+            return true; // Retorna verdadeiro se o e-mail foi enviado com sucesso
+        } else {
+            return false; // Retorna falso se houve erro no envio
+        }
     } catch (Exception $e) {
         error_log("E-mail não pôde ser enviado. Erro: {$mail->ErrorInfo}");
         return false; // Retorna falso se houve erro no envio
@@ -130,7 +143,7 @@ $stmt = $conn->query($sqlSelect);
         .dataTable {
             color: white;
             /* Cor do texto */
-            background-color: #333;
+            background-color: #590209;
             /* Cor de fundo escura */
         }
 
@@ -145,6 +158,12 @@ $stmt = $conn->query($sqlSelect);
         /* Para as linhas ímpares */
         .dataTable tbody tr.odd {
             background-color: #555;
+            /* Cor de fundo das linhas ímpares */
+        }
+
+        /* Para as linhas ímpares */
+        .dataTable tbody tr.even {
+            background-color: #333;
             /* Cor de fundo das linhas ímpares */
         }
 
@@ -185,13 +204,6 @@ $stmt = $conn->query($sqlSelect);
         table.dataTable .dataTables_info {
             color: #fff
         }
-
-/* Estilo para o seletor de comprimento */
-.dataTables_paginate select {
-    background-color: #444; /* Cor de fundo escura para o seletor */
-    color: white; /* Cor do texto em branco */
-    border: 1px solid #555; /* Borda escura */
-}
 
         .dataTables_filter input {
             background-color: #444;

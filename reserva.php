@@ -17,6 +17,49 @@
 </head>
 
 <body style="background-color: #000; color: #a3a3a3; font-weight: 100;">
+    <style>
+        .btnvoltar {
+            z-index: 10;
+            position: relative;
+            background-image: linear-gradient(to right bottom, hsl(0, 100%, 50%), hsl(0, 100%, 13%), hsl(0, 100%, 58%));
+            color: rgb(255, 255, 255);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 300;
+            width: 20vw;
+            max-width: max-content;
+            min-width: 100px;
+            height: 50px;
+            display: grid;
+            place-items: center;
+            padding-inline: 30px;
+            clip-path: polygon(0% 0%, 90% 0, 100% 30%, 100% 100%, 0 100%);
+            overflow: hidden;
+            left: 6vw;
+            top: 20px;
+            text-decoration: none;
+        }
+
+        .btnvoltar::before {
+            font-family: 'Montserrat', sans-serif;
+            text-decoration: none;
+            content: "";
+            position: absolute;
+            top: var(--top, 50%);
+            left: var(--left, 50%);
+            width: 100%;
+            padding-block-end: 100%;
+            background-color: rgb(255, 66, 66);
+            transform: translate(-50%, -50%) scale(0);
+            border-radius: 50%;
+            z-index: -1;
+            transition: transform 500ms ease;
+        }
+
+        .btnvoltar:is(:hover, :focus-visible)::before {
+            transform: translate(-50%, -50%) scale(1);
+        }
+        </style>
     <?php
     session_start(); // Inicia a sessão
     
@@ -49,7 +92,9 @@
 
     }
     ?>
-    <a href="index.php" class="btnvoltar" data-btn>Voltar</a>
+    <?php
+            echo "<a href='index.php' class='btnvoltar' data-btn>Voltar</a>";
+    ?>        
     <div class="container">
         <h1
             style="font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: 48px; text-align: center; text-transform: uppercase; background-color: #000; color: #fff; padding: 20px;">

@@ -148,7 +148,7 @@ session_start();
                     <span class="line line-3"></span>
                 </button>
 
-            </div>
+                </div>
     </header>
 
     <main>
@@ -656,7 +656,6 @@ session_start();
 
                     <!-- Script para exibir o modal e redirecionar -->
                     <script>
-
                         function abrirModal() {
                             const codAdmInput = document.querySelector('input[name="cod_adm"]').value;
 

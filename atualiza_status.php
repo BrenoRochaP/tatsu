@@ -1,23 +1,18 @@
 <?php
 session_start();
-include('data/conexao.php');
+include 'data/conexao.php';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $pedido_id = $_POST['pedido_id'];
-    $status = $_POST['status'];
+// Atualizar status do pedido
+if (isset($_POST['pedido_id']) && isset($_POST['status'])) {
+    $pedido_id = intval($_POST['pedido_id']);
+    $status = $_POST['status']; // 'pago' ou 'entregue'
 
-    // Atualiza o status no banco de dados
-    $sqlUpdate = "UPDATE pedidos SET status = ? WHERE id = ?";
-    $stmt = $conn->prepare($sqlUpdate);
+    $sql = "UPDATE pedidos SET status = ? WHERE id = ?";
+    $stmt = $conn->prepare($sql);
     $stmt->bind_param("si", $status, $pedido_id);
+    $stmt->execute();
 
-    if ($stmt->execute()) {
-        // Redireciona de volta para a página de pedidos
-        header("Location: delivery_adm.php");
-        exit();
-    } else {
-        echo "Erro ao atualizar o status: " . $stmt->error;
-    }
+    echo "Status do pedido atualizado para: " . htmlspecialchars($status);
+    exit();
 }
-$conn->close();
 ?>

@@ -2,47 +2,116 @@
 session_start();
 include('data/conexao.php');
 
-// Simulando um usuário logado
-$usuario_id = 1; // Atualize para o ID do usuário real
+// Verifica se a sessão está ativa
+if (!isset($_SESSION['email'])) {
+    echo '<script>alert("Você precisa estar logado para acessar esta página.");</script>';
+    echo '<script>window.location.href = "login.php";</script>';
+    exit();
+}
 
-// Consulta para obter todos os pedidos e itens associados
+// Obtém o email do usuário logado
+$email = $_SESSION['email'];
+
+// Consulta para obter o usuario_id a partir do email
+$sql_usuario = "SELECT ID_USUARIO FROM usuario WHERE EMAIL_USUARIO = ?";
+$stmt_usuario = $conn->prepare($sql_usuario);
+$stmt_usuario->bind_param("s", $email);
+$stmt_usuario->execute();
+$result_usuario = $stmt_usuario->get_result();
+
+// Verifica se o usuário existe
+if ($result_usuario->num_rows === 0) {
+    echo "Erro: Usuário não encontrado.";
+    exit();
+}
+
+// Obtém o usuario_id
+$usuario = $result_usuario->fetch_assoc();
+$usuario_id = $usuario['ID_USUARIO'];
+
+// Consulta para obter todos os pedidos e informações associadas
 $query = "
-    SELECT p.id AS pedido_id, p.data_pedido, p.total AS total_pedido,
-           ip.item_id, ip.quantidade, ip.preco AS preco_item, 
-           i.nome AS nome_item,
-           e.rua AS endereco_pedido, e.numero AS numero_casa, e.bairro, e.cidade,
-           p.status_pagamento AS pagamento_tipo
+    SELECT p.id AS pedido_id, 
+           u.NOME_USUARIO AS nome_cliente, 
+           p.data_pedido, 
+           p.total AS total_pedido,
+           e.rua AS endereco_pedido, 
+           e.numero AS numero_casa, 
+           e.bairro, 
+           e.cidade,
+           p.status_pagamento AS pagamento_tipo,
+           p.status
     FROM pedidos p
-    JOIN itens_pedido ip ON p.id = ip.pedido_id
-    JOIN item i ON ip.item_id = i.id
-    JOIN enderecos e ON p.endereco_id = e.id
+    LEFT JOIN usuario u ON p.usuario_id = u.ID_USUARIO
+    LEFT JOIN enderecos e ON p.endereco_id = e.id
     WHERE p.usuario_id = ?
-    ORDER BY p.data_pedido DESC, p.id ASC
+    ORDER BY p.data_pedido DESC, p.id ASC;
 ";
-
 
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $usuario_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
+if ($result === false) {
+    echo "Erro na execução da consulta: " . $conn->error;
+    exit();
+}
+
 $pedidos = [];
 while ($row = $result->fetch_assoc()) {
     $pedido_id = $row['pedido_id'];
-    $pedidos[$pedido_id]['data_pedido'] = $row['data_pedido'];
-    $pedidos[$pedido_id]['total_pedido'] = $row['total_pedido'];
-    $pedidos[$pedido_id]['endereco_pedido'] = $row['endereco_pedido'];
-    $pedidos[$pedido_id]['numero_casa'] = $row['numero_casa'];
-    $pedidos[$pedido_id]['bairro'] = $row['bairro'];
-    $pedidos[$pedido_id]['cidade'] = $row['cidade'];
-    $pedidos[$pedido_id]['pagamento_tipo'] = $row['pagamento_tipo'];
-    $pedidos[$pedido_id]['itens'][] = [
-        'nome_item' => $row['nome_item'],
-        'quantidade' => $row['quantidade'],
-        'preco_item' => $row['preco_item']
+    $pedidos[$pedido_id] = [
+        'data_pedido' => $row['data_pedido'],
+        'total_pedido' => 0, // Inicia com 0
+        'endereco_pedido' => $row['endereco_pedido'],
+        'numero_casa' => $row['numero_casa'],
+        'bairro' => $row['bairro'],
+        'cidade' => $row['cidade'],
+        'pagamento_tipo' => $row['pagamento_tipo'],
+        'nome_cliente' => $row['nome_cliente'],
+        'itens' => [] // Inicializa a chave 'itens'
     ];
-}
 
+    // Agora, vamos buscar os itens do pedido
+    $query_itens = "
+        SELECT i.nome AS nome_item, 
+               ip.quantidade, 
+               ip.preco
+        FROM itens_pedido ip
+        JOIN item i ON ip.item_id = i.id
+        WHERE ip.pedido_id = ?;
+    ";
+
+    $stmt_itens = $conn->prepare($query_itens);
+    $stmt_itens->bind_param("i", $pedido_id);
+    $stmt_itens->execute();
+    $result_itens = $stmt_itens->get_result();
+
+    $total_pedido = 0; // Inicializa o total do pedido
+
+    while ($item_row = $result_itens->fetch_assoc()) {
+        $quantidade = $item_row['quantidade'];
+        $preco_item = $item_row['preco'];
+        $total_item = $quantidade * $preco_item;
+
+        // Soma o valor total de cada item no pedido
+        $total_pedido += $total_item;
+
+        // Adiciona os itens no pedido
+        $pedidos[$pedido_id]['itens'][] = [
+            'nome_item' => $item_row['nome_item'],
+            'quantidade' => $quantidade,
+            'preco_item' => $preco_item,
+            'total_item' => $total_item
+        ];
+    }
+
+    // Após percorrer todos os itens, atribui o total calculado ao pedido
+    $pedidos[$pedido_id]['total_pedido'] = $total_pedido;
+
+    $stmt_itens->close();
+}
 
 $stmt->close();
 ?>
@@ -210,9 +279,7 @@ $stmt->close();
 <body>
 
     <div class="container">
-        <?php
-        echo "<a href='index.php' class='btnvoltar' data-btn>Voltar</a>";
-        ?>
+        <a href='index.php' class='btnvoltar' data-btn>Voltar</a>
         <center>
             <div class="header">
                 <h1>Histórico de Pedidos</h1>
@@ -228,22 +295,18 @@ $stmt->close();
                         <span><?php echo date('d/m/Y H:i:s', strtotime($pedido['data_pedido'])); ?></span>
                     </div>
                     <div class="endereco">
-                        <p>Endereço:
-                            <?php echo $pedido['endereco_pedido'] . ', ' . $pedido['numero_casa'] . ', ' . $pedido['bairro'] . ' - ' . $pedido['cidade']; ?>
-                        </p>
+                        <p>Endereço: <?php echo $pedido['endereco_pedido'] . ', ' . $pedido['numero_casa'] . ', ' . $pedido['bairro'] . ' - ' . $pedido['cidade']; ?></p>
                     </div>
-
                     <div class="pagamento">
-                        <p>Pagamento: <?php echo ($pedido['pagamento_tipo'] == 1) ? 'Pago' : 'Só na entrega'; ?></p>
+                        <p>Pagamento: <?php echo ($pedido['pagamento_tipo']); ?></p>
                     </div>
                     <div class="itens">
                         <?php foreach ($pedido['itens'] as $item): ?>
                             <div class="item">
                                 <span><?php echo $item['nome_item']; ?></span>
                                 <span>Qtd: <?php echo $item['quantidade']; ?></span>
-                                <span>Unit: R$ <?php echo number_format($item['preco_item'], 2, ',', '.'); ?></span>
-                                <span class="total">Total: R$
-                                    <?php echo number_format($item['quantidade'] * $item['preco_item'], 2, ',', '.'); ?></span>
+                                <span>Unid: R$ <?php echo number_format($item['preco_item'], 2, ',', '.'); ?></span>
+                                <span class="total">Total: R$ <?php echo number_format($item['quantidade'] * $item['preco_item'], 2, ',', '.'); ?></span>
                             </div>
                         <?php endforeach; ?>
                     </div>

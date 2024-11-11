@@ -88,7 +88,6 @@ include('data/conexao.php');
         }
 
         .btnvoltar {
-            z-index: 10;
             position: relative;
             background-image: linear-gradient(to right bottom, hsl(0, 100%, 50%), hsl(0, 100%, 13%), hsl(0, 100%, 58%));
             color: rgb(255, 255, 255);
@@ -110,12 +109,10 @@ include('data/conexao.php');
         }
 
         .btnvoltar::before {
-            font-family: 'Montserrat', sans-serif;
-            text-decoration: none;
             content: "";
             position: absolute;
-            top: var(--top, 50%);
-            left: var(--left, 50%);
+            top: 50%;
+            left: 50%;
             width: 100%;
             padding-block-end: 100%;
             background-color: rgb(255, 66, 66);
@@ -127,7 +124,6 @@ include('data/conexao.php');
 
         .btnvoltar:is(:hover, :focus-visible)::before {
             transform: translate(-50%, -50%) scale(1);
-            text-decoration: none;
         }
 
         /* Estilos para o campo de seleção e botão de atualização */
@@ -158,89 +154,78 @@ include('data/conexao.php');
 
 <body>
 
-    <?php
-    echo "<a href='index.php' class='btnvoltar' data-btn>Voltar</a>";
-    ?>
+    <?php echo "<a href='index.php' class='btnvoltar' data-btn>Voltar</a>"; ?>
+
     <div class="container">
         <h1>Pedidos Tatsu</h1>
-        <?php
 
-        // Consulta SQL atualizada para incluir endereço e status de pagamento
+        <?php
+        // Consulta SQL para obter detalhes do pedido
         $sqlSelect = "
-    SELECT p.id AS pedido_id, 
-           u.NOME_USUARIO AS nome_cliente, 
-           p.data_pedido, 
-           p.total AS total_pedido,
-           e.rua AS endereco_pedido, 
-           e.numero AS numero_casa, 
-           e.bairro, 
-           e.cidade,
-           p.status_pagamento, 
-           p.status,
-           ip.item_id, 
-           ip.quantidade, 
-           ip.preco AS preco_item, 
-           i.nome AS nome_item
-    FROM pedidos p
-    JOIN usuario u ON p.usuario_id = u.ID_USUARIO
-    JOIN enderecos e ON p.endereco_id = e.id
-    JOIN itens_pedido ip ON p.id = ip.pedido_id
-    JOIN item i ON ip.item_id = i.id
-    ORDER BY p.data_pedido DESC, p.id ASC
-";
+        SELECT p.id AS pedido_id, 
+               u.NOME_USUARIO AS nome_cliente, 
+               p.data_pedido, 
+               p.total AS total_pedido,
+               e.rua AS endereco_pedido, 
+               e.numero AS numero_casa, 
+               e.bairro, 
+               e.cidade,
+               p.status_pagamento, 
+               p.status
+        FROM pedidos p
+        LEFT JOIN usuario u ON p.usuario_id = u.ID_USUARIO
+        LEFT JOIN enderecos e ON p.endereco_id = e.id
+        ORDER BY p.data_pedido DESC, p.id ASC
+        ";
 
         $stmt = $conn->query($sqlSelect);
 
+        echo "<table class='table'>
+            <thead>
+                <tr>
+                    <th>ID do Pedido</th>
+                    <th>Nome do Cliente</th>
+                    <th>Data do Pedido</th>
+                    <th>Total</th>
+                    <th>Endereço</th>
+                    <th>Status de Pagamento</th>
+                    <th>Status</th>
+                    <th>Atualizar Situação</th>
+                </tr>
+            </thead>
+            <tbody>";
 
-        try {
-            echo "<table class='table'>
-                    <thead>
-                        <tr>
-                            <th>ID do Pedido</th>
-                            <th>Nome do Cliente</th>
-                            <th>Data do Pedido</th>
-                            <th>Total</th>
-                            <th>Endereço</th>
-                            <th>Status de Pagamento</th>
-                            <th>Status</th>
-                            <th>Atualizar Situação</th>
-                        </tr>
-                    </thead>
-                    <tbody>";
+        if ($stmt->num_rows > 0) {
+            while ($row = $stmt->fetch_assoc()) {
+                $total_pedido = isset($row["total_pedido"]) ? number_format($row["total_pedido"], 2, ',', '.') : 'Total não disponível';
+                $endereco_pedido = isset($row['endereco_pedido']) ? $row['endereco_pedido'] : 'Rua não disponível';
 
-            if ($stmt->num_rows > 0) {
-                while ($row = $stmt->fetch_assoc()) {
-                    $endereco_pedido = isset($row['endereco_pedido']) ? $row['endereco_pedido'] : 'Rua não disponível';
-
-
-                    echo "<tr>
+                echo "<tr>
                     <td>" . (isset($row["pedido_id"]) ? htmlspecialchars($row["pedido_id"]) : 'ID não disponível') . "</td>
                     <td>" . (isset($row["nome_cliente"]) ? htmlspecialchars($row["nome_cliente"]) : 'Cliente não disponível') . "</td>
                     <td>" . (isset($row["data_pedido"]) ? htmlspecialchars($row["data_pedido"]) : 'Data não disponível') . "</td>
-                    <td>R$ " . (isset($row["total_pedido"]) ? number_format($row["total_pedido"], 2, ',', '.') : 'Total não disponível') . "</td>
+                    <td>R$ " . $total_pedido . "</td>
                     <td>" . $endereco_pedido . "</td>
                     <td>" . (isset($row["status_pagamento"]) ? htmlspecialchars($row["status_pagamento"]) : 'Status de pagamento não disponível') . "</td>
                     <td>" . (isset($row["status"]) ? htmlspecialchars($row["status"]) : 'Status não disponível') . "</td>
                     <td>
-                                <form method='POST' action='atualiza_status.php'>
-                                    <input type='hidden' name='pedido_id' value='" . (isset($row["pedido_id"]) ? htmlspecialchars($row["pedido_id"]) : '') . "'>
-                                    <select name='status'>
-                                        <option value='Pendente'>Pendente</option>
-                                        <option value='Enviado'>Enviado</option>
-                                        <option value='Cancelado'>Cancelado</option>
-                                    </select>
-                                    <button type='submit' class='btn-update-status'><center><img src='assets\images\atualizar.png'></center></button>
-                                </form>
-                            </td>
-                          </tr>";
-                }
-            } else {
-                echo "<tr><td colspan='8'>Nenhum pedido encontrado</td></tr>";
+                        <form method='POST' action='atualiza_status.php'>
+                            <input type='hidden' name='pedido_id' value='" . (isset($row["pedido_id"]) ? htmlspecialchars($row["pedido_id"]) : '') . "'>
+                            <select name='status'>
+                                <option value='Pendente'>Pendente</option>
+                                <option value='Enviado'>Enviado</option>
+                                <option value='Cancelado'>Cancelado</option>
+                            </select>
+                            <button type='submit' class='btn-update-status'><center><img src='assets/images/atualizar.png'></center></button>
+                        </form>
+                    </td>
+                  </tr>";
             }
-            echo "</tbody></table>";
-        } catch (Exception $erro) {
-            die("Não foi possível executar $sqlSelect: " . $erro->getMessage());
+        } else {
+            echo "<tr><td colspan='8'>Nenhum pedido encontrado</td></tr>";
         }
+
+        echo "</tbody></table>";
         $conn->close();
         ?>
     </div>

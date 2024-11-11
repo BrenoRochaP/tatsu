@@ -14,16 +14,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // INSERÇÃO DE DADOS NA TABELA ENDERECOS
     $sql = "INSERT INTO enderecos (rua, numero, complemento, cep, bairro, cidade, estado) 
-            VALUES ('$rua', '$numero', '$complemento', '$cep', '$bairro', '$cidade', '$estado')";
+            VALUES (?, ?, ?, ?, ?, ?, ?)";
 
     // Executando a inserção
     try {
         $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sssssss", $rua, $numero, $complemento, $cep, $bairro, $cidade, $estado);
         $stmt->execute();
-        
+
         // Captura o ID do último endereço inserido
         $endereco_id = mysqli_insert_id($conn); // Use esta função para mysqli
-        
+
+        // Armazenando o endereco_id na sessão
+        session_start();
+        $_SESSION['endereco_id'] = $endereco_id;
+
         // Redireciona para a página de pagamento com o endereco_id
         header("Location: pagamento.php?endereco_id=" . $endereco_id);
         exit; // Certifique-se de sair após o redirecionamento
