@@ -1,35 +1,30 @@
+<!-- INICIO PHP -->
 <?php
 session_start();
 include('data/conexao.php');
 
-// Verifica se a sessão está ativa
 if (!isset($_SESSION['email'])) {
     echo '<script>alert("Você precisa estar logado para acessar esta página.");</script>';
     echo '<script>window.location.href = "login.php";</script>';
     exit();
 }
 
-// Obtém o email do usuário logado
 $email = $_SESSION['email'];
 
-// Consulta para obter o usuario_id a partir do email
 $sql_usuario = "SELECT ID_USUARIO FROM usuario WHERE EMAIL_USUARIO = ?";
 $stmt_usuario = $conn->prepare($sql_usuario);
 $stmt_usuario->bind_param("s", $email);
 $stmt_usuario->execute();
 $result_usuario = $stmt_usuario->get_result();
 
-// Verifica se o usuário existe
 if ($result_usuario->num_rows === 0) {
     echo "Erro: Usuário não encontrado.";
     exit();
 }
 
-// Obtém o usuario_id
 $usuario = $result_usuario->fetch_assoc();
 $usuario_id = $usuario['ID_USUARIO'];
 
-// Consulta para obter todos os pedidos e informações associadas
 $query = "
     SELECT p.id AS pedido_id, 
            u.NOME_USUARIO AS nome_cliente, 
@@ -63,17 +58,16 @@ while ($row = $result->fetch_assoc()) {
     $pedido_id = $row['pedido_id'];
     $pedidos[$pedido_id] = [
         'data_pedido' => $row['data_pedido'],
-        'total_pedido' => 0, // Inicia com 0
+        'total_pedido' => 0,
         'endereco_pedido' => $row['endereco_pedido'],
         'numero_casa' => $row['numero_casa'],
         'bairro' => $row['bairro'],
         'cidade' => $row['cidade'],
         'pagamento_tipo' => $row['pagamento_tipo'],
         'nome_cliente' => $row['nome_cliente'],
-        'itens' => [] // Inicializa a chave 'itens'
+        'itens' => []
     ];
 
-    // Agora, vamos buscar os itens do pedido
     $query_itens = "
         SELECT i.nome AS nome_item, 
                ip.quantidade, 
@@ -88,17 +82,15 @@ while ($row = $result->fetch_assoc()) {
     $stmt_itens->execute();
     $result_itens = $stmt_itens->get_result();
 
-    $total_pedido = 0; // Inicializa o total do pedido
+    $total_pedido = 0;
 
     while ($item_row = $result_itens->fetch_assoc()) {
         $quantidade = $item_row['quantidade'];
         $preco_item = $item_row['preco'];
         $total_item = $quantidade * $preco_item;
 
-        // Soma o valor total de cada item no pedido
         $total_pedido += $total_item;
 
-        // Adiciona os itens no pedido
         $pedidos[$pedido_id]['itens'][] = [
             'nome_item' => $item_row['nome_item'],
             'quantidade' => $quantidade,
@@ -107,7 +99,6 @@ while ($row = $result->fetch_assoc()) {
         ];
     }
 
-    // Após percorrer todos os itens, atribui o total calculado ao pedido
     $pedidos[$pedido_id]['total_pedido'] = $total_pedido;
 
     $stmt_itens->close();
@@ -115,7 +106,8 @@ while ($row = $result->fetch_assoc()) {
 
 $stmt->close();
 ?>
-
+<!-- FIM PHP -->
+<!-- INICIO HTML -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -124,6 +116,7 @@ $stmt->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Histórico de Pedidos Tatsu Sushi Bar</title>
     <link rel="icon" href="./assets/images/dragaoicone.png" type="image/x-icon">
+    <!-- INICIO CSS -->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -274,7 +267,9 @@ $stmt->close();
             transform: translate(-50%, -50%) scale(1);
         }
     </style>
+    <!-- FIM CSS -->
 </head>
+<!-- INICIO HTML -->
 
 <body>
 
@@ -295,7 +290,9 @@ $stmt->close();
                         <span><?php echo date('d/m/Y H:i:s', strtotime($pedido['data_pedido'])); ?></span>
                     </div>
                     <div class="endereco">
-                        <p>Endereço: <?php echo $pedido['endereco_pedido'] . ', ' . $pedido['numero_casa'] . ', ' . $pedido['bairro'] . ' - ' . $pedido['cidade']; ?></p>
+                        <p>Endereço:
+                            <?php echo $pedido['endereco_pedido'] . ', ' . $pedido['numero_casa'] . ', ' . $pedido['bairro'] . ' - ' . $pedido['cidade']; ?>
+                        </p>
                     </div>
                     <div class="pagamento">
                         <p>Pagamento: <?php echo ($pedido['pagamento_tipo']); ?></p>
@@ -306,7 +303,8 @@ $stmt->close();
                                 <span><?php echo $item['nome_item']; ?></span>
                                 <span>Qtd: <?php echo $item['quantidade']; ?></span>
                                 <span>Unid: R$ <?php echo number_format($item['preco_item'], 2, ',', '.'); ?></span>
-                                <span class="total">Total: R$ <?php echo number_format($item['quantidade'] * $item['preco_item'], 2, ',', '.'); ?></span>
+                                <span class="total">Total: R$
+                                    <?php echo number_format($item['quantidade'] * $item['preco_item'], 2, ',', '.'); ?></span>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -320,3 +318,4 @@ $stmt->close();
 </body>
 
 </html>
+<!-- FIM HTML -->

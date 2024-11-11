@@ -12,16 +12,13 @@
 
 <body>
 
-    <!-- PHP -->
+    <!-- INICIO PHP -->
     <?php
     include('data/conexao.php');
     session_start();
 
-    // Função para atualizar os dados do usuário
-    // Função para atualizar os dados do usuário
     function atualizarDados($conn, $email, $nome, $email_novo, $senha, $telefone, $data_nasc, $genero, $endereco, $cidade, $estado)
     {
-        // Verifica se o novo email já está em uso
         $query_check_email = $conn->prepare("SELECT * FROM usuario WHERE email_usuario = ? AND email_usuario != ?");
         $query_check_email->bind_param("ss", $email_novo, $email);
         $query_check_email->execute();
@@ -31,20 +28,16 @@
             return "Este email já está em uso por outro usuário.";
         }
 
-        // Condicionando a atualização da senha
         if (!empty($senha)) {
             $hashed_senha = password_hash($senha, PASSWORD_DEFAULT);
         } else {
-            // Mantenha a senha atual se não for fornecida
             $hashed_senha = getSenhaAtual($conn, $email);
         }
 
-        // Atualização dos dados do usuário
         $query = $conn->prepare("UPDATE usuario SET nome_usuario = ?, email_usuario = ?, senha_usuario = ?, telefone_usuario = ?, data_nasc_usuario = ?, genero_usuario = ?, endereco_usuario = ?, cidade_usuario = ?, estado_usuario = ? WHERE email_usuario = ?");
         $query->bind_param("ssssssssis", $nome, $email_novo, $hashed_senha, $telefone, $data_nasc, $genero, $endereco, $cidade, $estado, $email);
 
         if ($query->execute()) {
-            // Excluir o registro antigo apenas se o email foi alterado
             if ($email !== $email_novo) {
                 $query_delete = $conn->prepare("DELETE FROM usuario WHERE email_usuario = ?");
                 $query_delete->bind_param("s", $email);
@@ -68,7 +61,6 @@
         return $usuario['senha_usuario'];
     }
 
-    // Verifica se o usuário está logado
     if (!isset($_SESSION['email'])) {
         header('Location: login.php');
         exit();
@@ -76,7 +68,6 @@
 
     $email = $_SESSION['email'];
 
-    // Verifica se o formulário foi enviado
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $nome = $_POST['nome'];
         $email_novo = $_POST['email'];
@@ -88,20 +79,18 @@
         $cidade = $_POST['cidade'];
         $estado = $_POST['estado'];
 
-        // Chama a função para atualizar os dados
         $resultado = atualizarDados($conn, $email, $nome, $email_novo, $senha, $telefone, $data_nasc, $genero, $endereco, $cidade, $estado);
 
-        // Mensagem de feedback
         $_SESSION['message'] = $resultado;
         if (strpos($resultado, "sucesso") !== false) {
-            $_SESSION['email'] = $email_novo; // Atualiza o email na sessão
+            $_SESSION['email'] = $email_novo; 
             header('Location: crud_usuario.php');
             exit();
         }
     }
     ?>
     <!-- FIM PHP -->
-
+<!-- INICIO HTML -->
     <a href="index.php" class="btn" data-btn>Voltar</a>
     <br />
     <section class="container">
@@ -203,3 +192,4 @@
 </body>
 
 </html>
+<!-- FIM HTML -->

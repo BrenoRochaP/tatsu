@@ -1,23 +1,20 @@
+<!-- INICIO PHP -->
 <?php
 session_start();
 include('data/conexao.php');
 
-// Verifica se a sessão está ativa
 if (!isset($_SESSION['email'])) {
     echo '<script>alert("Você precisa estar logado para acessar esta página.");</script>';
     echo '<script>window.location.href = "login.php";</script>';
     exit();
 }
 
-// Simulando um usuário logado
 $email = $_SESSION['email'];
 
-// Inicializa o carrinho se não existir
 if (!isset($_SESSION['carrinho'])) {
     $_SESSION['carrinho'] = [];
 }
 
-// Processa a adição de produtos ao carrinho
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_id']) && isset($_POST['quantidade'])) {
     $product_id = intval($_POST['product_id']);
     $quantidade = intval($_POST['quantidade']);
@@ -29,13 +26,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_id']) && isse
     }
 }
 
-// Processa a remoção de produtos do carrinho
 if (isset($_POST['remove_id'])) {
     $remove_id = intval($_POST['remove_id']);
     unset($_SESSION['carrinho'][$remove_id]);
 }
 
-// Processa a atualização da quantidade do produto no carrinho
 if (isset($_POST['update_id']) && isset($_POST['update_quantidade'])) {
     $update_id = intval($_POST['update_id']);
     $update_quantidade = intval($_POST['update_quantidade']);
@@ -46,7 +41,6 @@ if (isset($_POST['update_id']) && isset($_POST['update_quantidade'])) {
     }
 }
 
-// Obtém os produtos para exibir
 $products = [
     1 => ['nome' => 'Sushi de Salmão', 'preco' => 35.00, 'imagem' => 'assets/images/prato_1.jpg'],
     2 => ['nome' => 'Rámen', 'preco' => 45.00, 'imagem' => 'assets/images/prato_2.jpg'],
@@ -60,7 +54,7 @@ $products = [
 ];
 
 ?>
-
+<!-- FIM PHP -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -70,6 +64,7 @@ $products = [
     <title>Carrinho Tatsu Sushi Bar</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="icon" href="./assets/images/dragaoicone.png" type="image/x-icon">
+    <!-- INICIO CSS -->
     <style>
         body {
             background-color: rgb(18, 18, 18);
@@ -197,7 +192,9 @@ $products = [
             transform: translate(-50%, -50%) scale(1);
         }
     </style>
+    <!-- FIM CSS -->
 </head>
+<!-- INICIO HTML -->
 
 <body>
     <?php
@@ -241,7 +238,7 @@ $products = [
                 <form id="pedidoForm" action="finalizar_pedido.php" method="post" onsubmit="return handleFormSubmit();">
                     <button type="submit" id="btn-fazer-pedido">Fazer Pedido</button>
                 </form>
-
+<!-- INICIO JS -->
                 <script>
                     function handleFormSubmit() {
                         document.getElementById('pedidoForm').submit();
@@ -249,6 +246,7 @@ $products = [
                         return false;
                     }
                 </script>
+                <!-- FIM JS -->
                 <form action="delivery.php" method="get">
                     <button type="submit">Ver Menu</button>
                 </form>
@@ -259,3 +257,4 @@ $products = [
 </body>
 
 </html>
+<!-- FIM HTML -->

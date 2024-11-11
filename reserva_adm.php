@@ -1,65 +1,57 @@
-<?php 
+<!-- INCIIO PHP -->
+<?php
 session_start();
 include('data/conexao.php');
 
-// Incluindo o autoload do Composer
-require 'vendor/autoload.php'; 
+require 'vendor/autoload.php';
 
-// Usando as classes do PHPMailer
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
-// Função para enviar e-mail de confirmação
-function enviarEmailConfirmacao($email, $nome) {
-    $mail = new PHPMailer(true); // Instancia o PHPMailer
+function enviarEmailConfirmacao($email, $nome)
+{
+    $mail = new PHPMailer(true);
     try {
-        // Habilitando o debug do SMTP (opcional, para depuração)
-        $mail->SMTPDebug = SMTP::DEBUG_SERVER; // Para depuração, pode ser removido em produção
+        $mail->SMTPDebug = SMTP::DEBUG_SERVER;
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
-        $mail->Username = 'tatsusushibar@gmail.com'; // Seu e-mail
-        $mail->Password = 'tatsu2024'; // Sua senha (considerar usar variáveis de ambiente)
+        $mail->Username = 'tatsusushibar@gmail.com';
+        $mail->Password = 'tatsu2024';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
 
-        // Destinatários
         $mail->setFrom('tatsusushibar@gmail.com', 'Reserva Tatsu');
-        $mail->addAddress($email, $nome); // Adiciona um destinatário
+        $mail->addAddress($email, $nome);
 
-        // Conteúdo do e-mail
         $mail->isHTML(true);
         $mail->Subject = 'Confirmação de Reserva';
         $mail->Body = "Olá $nome,<br> Sua reserva foi confirmada com sucesso!<br> Obrigado por escolher o Reserva Tatsu.";
         $mail->AltBody = "Olá $nome, Sua reserva foi confirmada com sucesso! Obrigado por escolher o Reserva Tatsu.";
 
-        // Envio do e-mail
-        if($mail->send()) {
-            return true; // Retorna verdadeiro se o e-mail foi enviado com sucesso
+        if ($mail->send()) {
+            return true;
         } else {
-            return false; // Retorna falso se houve erro no envio
+            return false;
         }
     } catch (Exception $e) {
         error_log("E-mail não pôde ser enviado. Erro: {$mail->ErrorInfo}");
-        return false; // Retorna falso se houve erro no envio
+        return false;
     }
 }
 
-// Ação de confirmação
 if (isset($_POST['confirmar'])) {
-    $reserva_id = (int) $_POST['reserva_id']; // Cast para inteiro para maior segurança
-    // Buscar dados da reserva para enviar o e-mail
+    $reserva_id = (int) $_POST['reserva_id'];
     $sql = "SELECT NOME_CLIENTE, EMAIL_CLIENTE FROM reserva WHERE ID_RESERVA = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $reserva_id); // Previne SQL Injection
+    $stmt->bind_param("i", $reserva_id);
     $stmt->execute();
     $result = $stmt->get_result();
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         $nome = htmlspecialchars($row['NOME_CLIENTE']);
         $email = htmlspecialchars($row['EMAIL_CLIENTE']);
-        // Enviar e-mail de confirmação
         if (enviarEmailConfirmacao($email, $nome)) {
             echo "<script>alert('Reserva confirmada e e-mail enviado para $email!');</script>";
         } else {
@@ -70,12 +62,11 @@ if (isset($_POST['confirmar'])) {
     }
 }
 
-// Ação de exclusão
 if (isset($_POST['excluir'])) {
-    $reserva_id = (int) $_POST['reserva_id']; // Cast para inteiro
+    $reserva_id = (int) $_POST['reserva_id'];
     $sql = "DELETE FROM reserva WHERE ID_RESERVA = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $reserva_id); // Previne SQL Injection
+    $stmt->bind_param("i", $reserva_id);
     if ($stmt->execute()) {
         echo "<script>alert('Reserva excluída com sucesso!');</script>";
     } else {
@@ -83,10 +74,11 @@ if (isset($_POST['excluir'])) {
     }
 }
 
-// Executa a consulta SQL
 $sqlSelect = "SELECT * FROM reserva";
 $stmt = $conn->query($sqlSelect);
 ?>
+<!-- FIM PHP -->
+<!-- INICIO HTML -->
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -105,12 +97,11 @@ $stmt = $conn->query($sqlSelect);
     <script src="assets/js_CRUD/jquery.validationEngine-2.6.2.js"></script>
     <script src="assets/js_CRUD/jquery.validationEngine-pt.js"></script>
     <script src="assets/js_CRUD/jquery.dataTables-1.10.0.min.js"></script>
+    <!-- INICIO CSS -->
     <style>
         body {
             background-color: #121212;
-            /* Fundo escuro */
             color: #e0e0e0;
-            /* Texto claro */
             font-family: Arial, sans-serif;
         }
 
@@ -119,7 +110,6 @@ $stmt = $conn->query($sqlSelect);
             width: 98%;
             padding: 2rem;
             background-color: #1f1f1f;
-            /* Fundo do container */
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
         }
@@ -135,70 +125,49 @@ $stmt = $conn->query($sqlSelect);
             border-radius: 10px;
             background-image: linear-gradient(to right bottom, hsl(0, 100%, 40%), hsl(0, 100%, 10%), hsl(0, 100%, 30%));
             color: #fff;
-            /* Cor do texto do título */
         }
 
-        /* Estilo da tabela */
-        /* Para a tabela */
         .dataTable {
             color: white;
-            /* Cor do texto */
             background-color: #590209;
-            /* Cor de fundo escura */
         }
 
-        /* Para os cabeçalhos da tabela */
         .dataTable th {
             color: white;
-            /* Cor do texto dos cabeçalhos */
             background-color: #444;
-            /* Cor de fundo dos cabeçalhos */
         }
 
-        /* Para as linhas ímpares */
         .dataTable tbody tr.odd {
             background-color: #555;
-            /* Cor de fundo das linhas ímpares */
         }
 
-        /* Para as linhas ímpares */
         .dataTable tbody tr.even {
             background-color: #333;
-            /* Cor de fundo das linhas ímpares */
         }
 
         th,
         td {
             padding: 12px;
             border: 1px solid #222;
-            /* Borda da tabela */
         }
 
         th {
             background-color: #590209;
-            /* Fundo do cabeçalho da tabela */
             color: #fff;
-            /* Texto do cabeçalho */
         }
 
         tr:nth-child(even) {
             background-color: #2a2a2a;
-            /* Cor das linhas pares */
         }
 
-        /* Estilo do campo de pesquisa */
         .search-field {
             width: 100%;
             padding: 10px;
             margin: 10px 0;
             background-color: #333;
-            /* Fundo do campo de pesquisa */
             color: #fff;
-            /* Texto do campo de pesquisa */
             border: 1px solid #555;
-            /* Borda do campo de pesquisa */
             border-radius: 5px;
-            /* Bordas arredondadas */
         }
 
         table.dataTable .dataTables_info {
@@ -207,20 +176,14 @@ $stmt = $conn->query($sqlSelect);
 
         .dataTables_filter input {
             background-color: #444;
-            /* Cor de fundo escura para o campo de busca */
             color: white;
-            /* Cor do texto em branco */
             border: 1px solid #555;
-            /* Borda do campo de busca */
         }
 
         .dataTables_length select {
             background-color: #444;
-            /* Cor de fundo escura para o seletor */
             color: white;
-            /* Cor do texto em branco */
             border: 1px solid #555;
-            /* Borda do seletor */
         }
 
         .dataTables_filter label,
@@ -232,40 +195,31 @@ $stmt = $conn->query($sqlSelect);
 
         .search-field::placeholder {
             color: #bbb;
-            /* Cor do texto do placeholder */
         }
 
-        /* Estilo dos botões */
         .btn {
             padding: 5px 10px;
             color: #fff;
             border-radius: 5px;
             border: none;
-            /* Remover borda padrão */
             cursor: pointer;
-            /* Mudar cursor ao passar o mouse */
             transition: background-color 0.3s;
-            /* Transição suave para hover */
         }
 
         .btn-info {
             background-color: #007bff;
-            /* Cor do botão de confirmação */
         }
 
         .btn-danger {
             background-color: #dc3545;
-            /* Cor do botão de exclusão */
         }
 
         .btn-info:hover {
             background-color: #0056b3;
-            /* Tom mais escuro ao passar o mouse */
         }
 
         .btn-danger:hover {
             background-color: #c82333;
-            /* Tom mais escuro ao passar o mouse */
         }
 
 
@@ -311,9 +265,11 @@ $stmt = $conn->query($sqlSelect);
             transform: translate(-50%, -50%) scale(1);
         }
     </style>
+    <!-- FIM CSS -->
 </head>
 
 <body>
+    <!-- INICIO PHP -->
     <?php echo "<a href='index.php' class='btnvoltar' data-btn>Voltar</a>"; ?>
     <div class="container">
         <h1>Reserva Tatsu</h1>
@@ -325,13 +281,13 @@ $stmt = $conn->query($sqlSelect);
             echo "<th>ID Reserva</th>";
             echo "<th>Nome do Cliente</th>";
             echo "<th>Email</th>";
-            echo "<th>Quantidade</th>"; // Coluna Quantidade
-            echo "<th>Data</th>"; // Coluna Data
-            echo "<th>Hora</th>"; // Coluna Hora
-            echo "<th>Área</th>"; // Coluna Área
-            echo "<th>Tipo</th>"; // Coluna Tipo
-            echo "<th>Observações</th>"; // Coluna Observações
-            echo "<th>Ações</th>"; // Coluna Ações
+            echo "<th>Quantidade</th>";
+            echo "<th>Data</th>";
+            echo "<th>Hora</th>";
+            echo "<th>Área</th>";
+            echo "<th>Tipo</th>";
+            echo "<th>Observações</th>";
+            echo "<th>Ações</th>";
             echo "</tr>";
             echo "</thead>";
             echo "<tbody>";
@@ -349,12 +305,12 @@ $stmt = $conn->query($sqlSelect);
                 echo "<td>$id_reserva</td>";
                 echo "<td>$nome_cliente</td>";
                 echo "<td>$email_cliente</td>";
-                echo "<td>$quantidade</td>"; // Preenchendo a coluna Quantidade
-                echo "<td>$data</td>"; // Preenchendo a coluna Data
-                echo "<td>$hora</td>"; // Preenchendo a coluna Hora
-                echo "<td>$area</td>"; // Preenchendo a coluna Área
-                echo "<td>$tipo</td>"; // Preenchendo a coluna Tipo
-                echo "<td>$observacoes</td>"; // Preenchendo a coluna Observações
+                echo "<td>$quantidade</td>";
+                echo "<td>$data</td>";
+                echo "<td>$hora</td>";
+                echo "<td>$area</td>";
+                echo "<td>$tipo</td>";
+                echo "<td>$observacoes</td>";
                 echo "<td>
                     <form method='post' style='display:inline-block;'>
                         <input type='hidden' name='reserva_id' value='$id_reserva'>
@@ -373,7 +329,9 @@ $stmt = $conn->query($sqlSelect);
             echo "Erro ao buscar reservas: " . $e->getMessage();
         }
         ?>
+        <!-- FIM PHP -->
     </div>
+    <!-- INICIO JS -->
     <script>
         $('#minhaTabela').DataTable({
             "language": {
@@ -392,6 +350,7 @@ $stmt = $conn->query($sqlSelect);
             }
         });
     </script>
+    <!-- FIM JS -->
 </body>
 
 </html>

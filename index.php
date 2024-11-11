@@ -36,6 +36,7 @@ session_start();
 <body id="top">
 
     <!-- HEADER -->
+    <!-- INICIO CSS -->
     <style>
         .dropdown {
             position: relative;
@@ -46,43 +47,34 @@ session_start();
             display: none;
             position: absolute;
             background-color: #222;
-            /* Cor de fundo escura */
             min-width: 160px;
             box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.5);
-            /* Sombra mais suave */
             z-index: 1;
             transition: opacity 0.3s ease, visibility 0.3s ease;
-            /* Transição suave */
             opacity: 0;
-            /* Começa invisível */
             visibility: hidden;
-            /* Começa invisível */
         }
 
         .dropdown:hover .dropdown-content {
             display: block;
             opacity: 1;
-            /* Torna visível */
             visibility: visible;
-            /* Torna visível */
         }
 
         .dropdown-content a {
             color: #fff;
-            /* Cor do texto branca */
             padding: 12px 16px;
             text-decoration: none;
             display: block;
             transition: background-color 0.3s ease;
-            /* Transição suave para o fundo */
         }
 
         .dropdown-content a:hover {
             background-color: #800000;
-            /* Cor de fundo ao passar o mouse */
         }
     </style>
-    <!-- HEADER -->
+    <!-- FIM CSS -->
+    <!-- INICIO HTML -->
     <header class="header active" data-header>
         <div class="container">
 
@@ -107,6 +99,7 @@ session_start();
 
                 </ul>
             </nav>
+            <!-- INICIO PHP -->
             <?php if (isset($_SESSION['email'])): ?>
                 <!-- Se a sessão estiver ativa, exibe o botão Sair -->
                 <a href="carrinho.php" class="btn" data-btn>CARRINHO</a>
@@ -126,7 +119,6 @@ session_start();
                 <?php endif; ?>
 
                 <?php
-                // Verifica se o formulário foi enviado
                 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     if (isset($_POST['cod_adm'])) {
                         $cod_adm = $_POST['cod_adm'];
@@ -142,18 +134,19 @@ session_start();
                 include('data/conexao.php');
 
                 ?>
+                <!-- FIM PHP -->
                 <button class="nav-toggle-btn" aria-label="toggle menu" data-nav-toggler>
                     <span class="line line-1"></span>
                     <span class="line line-2"></span>
                     <span class="line line-3"></span>
                 </button>
 
-                </div>
+            </div>
     </header>
 
     <main>
         <article>
-            <!-- home -->
+            <!-- HOME -->
             <div class="home has-before" id="home">
                 <div class="container">
 
@@ -579,18 +572,16 @@ session_start();
 
                     <p class="title footer-list-title ">Central do administrador:</p>
 
-                    <!-- Formulário de entrada -->
                     <form method="post" class="footer-form" onsubmit="return abrirModal()">
                         <input type="number" name="cod_adm" placeholder="Seu código de administrador..."
                             class="input-field">
                         <button type="submit" class="btn" data-btn>Entrar</button>
                     </form>
 
-                    <!-- Modal personalizado -->
                     <div id="modal" class="modal">
                         <div class="modal-content">
                             <p>Para qual página deseja ser direcionado?</p>
-                            <div class="modal-buttons"> <!-- Novo contêiner para os botões -->
+                            <div class="modal-buttons">
                                 <button onclick="redirecionarPagina('reserva_adm.php')"
                                     class="modal-button reserva">Reserva</button>
                                 <button onclick="redirecionarPagina('delivery_adm.php')"
@@ -598,7 +589,7 @@ session_start();
                             </div>
                         </div>
                     </div>
-                    <!-- Estilos para o modal -->
+                    <!-- INICIO CSS -->
                     <style>
                         .modal {
                             display: none;
@@ -625,17 +616,13 @@ session_start();
 
                         .modal-buttons {
                             display: flex;
-                            /* Define como flex container */
                             justify-content: center;
-                            /* Centraliza os botões */
                             margin-top: 10px;
-                            /* Espaçamento acima dos botões */
                         }
 
                         .modal-button {
                             padding: 10px 20px;
                             margin: 0 5px;
-                            /* Espaçamento entre os botões */
                             border: none;
                             border-radius: 5px;
                             cursor: pointer;
@@ -653,18 +640,17 @@ session_start();
                             border-radius: 30px;
                         }
                     </style>
-
-                    <!-- Script para exibir o modal e redirecionar -->
+                    <!-- FIM CSS -->
                     <script>
                         function abrirModal() {
                             const codAdmInput = document.querySelector('input[name="cod_adm"]').value;
 
                             if (codAdmInput === '100') {
-                                document.getElementById("modal").style.display = "block"; // Abre o modal
-                                return false; // Impede o envio do formulário
+                                document.getElementById("modal").style.display = "block";
+                                return false;
                             } else {
-                                alert("Código inválido. Tente novamente."); // Mensagem de erro
-                                return false; // Impede o envio do formulário
+                                alert("Código inválido. Tente novamente.");
+                                return false;
                             }
                         }
 

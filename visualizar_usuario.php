@@ -6,31 +6,23 @@
     <title>Dados do Usuário</title>
     <link rel="icon" href="./assets/images/dragaoicone.png" type="image/x-icon">
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css'>
+    <!-- INICIO CSS -->
     <style>
         body {
             background-color: #1c1c1c;
-            /* Cor de fundo escura */
             color: #f0f0f0;
-            /* Cor do texto clara */
             font-family: Arial, sans-serif;
-            /* Fonte mais moderna */
             margin: 0;
             padding: 0;
         }
 
         .container {
             max-width: 800px;
-            /* Largura máxima da página */
             margin: 50px auto;
-            /* Centraliza a página */
             padding: 20px;
-            /* Espaçamento interno */
             background-color: #2a2a2a;
-            /* Fundo do container */
             border-radius: 10px;
-            /* Bordas arredondadas */
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-            /* Sombra para profundidade */
         }
 
         header {
@@ -49,15 +41,10 @@
 
         .user-data p {
             margin: 10px 0;
-            /* Espaçamento entre os parágrafos */
             padding: 10px;
-            /* Espaçamento interno */
             border: 1px solid #444;
-            /* Borda ao redor dos parágrafos */
             border-radius: 5px;
-            /* Bordas arredondadas */
             background-color: #3a3a3a;
-            /* Fundo dos dados do usuário */
         }
 
         .btnvoltar {
@@ -102,15 +89,15 @@
             transform: translate(-50%, -50%) scale(1);
         }
     </style>
+    <!-- FIM CSS -->
 </head>
 
 <body>
-
+    <!-- INICIO PHP -->
     <?php
     include('data/conexao.php');
     session_start();
 
-    // Verifica se o usuário está logado
     if (!isset($_SESSION['email'])) {
         header("Location: login.php");
         exit();
@@ -118,13 +105,11 @@
 
     $email = $_SESSION['email'];
 
-    // Consulta os dados do usuário
     $query = $conn->prepare("SELECT * FROM usuario WHERE email_usuario = ?");
     $query->bind_param("s", $email);
     $query->execute();
     $result = $query->get_result();
 
-    // Verifica se o usuário foi encontrado
     if ($result->num_rows > 0) {
         $usuario = $result->fetch_assoc();
     } else {
@@ -132,7 +117,8 @@
         exit();
     }
     ?>
-
+    <!-- FIM PHP -->
+    <!-- INICIO HTML -->
     <a href="index.php" class="btnvoltar" data-btn>Voltar</a>
     <br />
     <section class="container">
@@ -152,5 +138,6 @@
     <script src="https://kit.fontawesome.com/56bcd8394b.js" crossorigin="anonymous"></script>
 
 </body>
+    <!-- FIM HTML -->
 
 </html>

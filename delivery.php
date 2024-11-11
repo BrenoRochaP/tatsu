@@ -1,15 +1,14 @@
+<!-- INICIO PHP -->
 <?php
 session_start();
 include('data/conexao.php');
-    // Verifica se a sessão está ativa
- if (!isset($_SESSION['email'])) {
-        echo '<script>alert("Você precisa estar logado para acessar esta página.");</script>';
-        // Usar exit() após echo pode prevenir o redirecionamento.
-        echo '<script>window.location.href = "login.php";</script>';
-        exit();
-    };
+if (!isset($_SESSION['email'])) {
+    echo '<script>alert("Você precisa estar logado para acessar esta página.");</script>';
+    echo '<script>window.location.href = "login.php";</script>';
+    exit();
+}
+;
 
-// Simulação de dados do banco de dados
 $products = [
     1 => ['nome' => 'Sushi de Salmão', 'preco' => 35.00, 'imagem' => 'assets/images/prato_1.jpg'],
     2 => ['nome' => 'Rámen', 'preco' => 45.00, 'imagem' => 'assets/images/prato_2.jpg'],
@@ -22,7 +21,7 @@ $products = [
     9 => ['nome' => 'Ceviche', 'preco' => 40.00, 'imagem' => 'assets/images/prato_5.jpg'],
 ];
 ?>
-
+<!-- FIM PHP -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -31,6 +30,7 @@ $products = [
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menu Tatsu Sushi Bar</title>
     <link rel="icon" href="./assets/images/dragaoicone.png" type="image/x-icon">
+    <!-- INICIO CSS -->
     <style>
         body {
             background-color: rgb(18, 18, 18);
@@ -191,8 +191,10 @@ $products = [
             }
         }
     </style>
-
+    <!-- FIM CSS -->
 </head>
+
+<!-- INICIO HTML -->
 
 <body>
     <?php
@@ -211,7 +213,8 @@ $products = [
                 <h2>Preço: R$ <?php echo number_format($product['preco'], 2, ',', '.'); ?></h2>
                 <form action="carrinho.php" method="post" style="display: inline;">
                     <input type="hidden" name="product_id" value="<?php echo $id; ?>">
-                    <input type="number" name="quantidade" min="1" class="quantidade-input" placeholder="Quantidade" required>
+                    <input type="number" name="quantidade" min="1" class="quantidade-input" placeholder="Quantidade"
+                        required>
                     <button type="submit">Adicionar ao carrinho</button>
                 </form>
             </div>
@@ -220,3 +223,4 @@ $products = [
 </body>
 
 </html>
+<!-- FIM HTML -->

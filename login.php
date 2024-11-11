@@ -10,7 +10,7 @@
 </head>
 
 <body>
-    <!-- PHP -->
+    <!-- INICIO PHP -->
     <?php
     session_start();
     include('data/conexao.php');
@@ -23,7 +23,6 @@
         if (empty($email) || empty($senha)) {
             $erro = "Por favor, preencha todos os campos.";
         } else {
-            // Usa prepared statement para evitar SQL Injection
             $sql = "SELECT * FROM usuario WHERE email_usuario = ?";
             $stmt = $conn->prepare($sql);
 
@@ -35,10 +34,9 @@
                 if ($result && $result->num_rows > 0) {
                     $row = $result->fetch_assoc();
                     if (password_verify($senha, $row['SENHA_USUARIO'])) {
-                        // Configurar a sessão
-                        $_SESSION['email'] = $email; // Salva o email na sessão
-                        header("Location: index.php"); // Redireciona para a página inicial
-                        exit(); // Para evitar que o código continue a ser executado
+                        $_SESSION['email'] = $email;
+                        header("Location: index.php");
+                        exit();
                     } else {
                         $erro = "Senha incorreta!";
                     }
@@ -53,6 +51,7 @@
         }
     }
     ?>
+    <!-- FIM PHP -->
 
     <a href="index.php" class="btn" data-btn>Voltar</a><br />
     <section class="container">
@@ -70,7 +69,7 @@
             <br />
             <button type="submit" name="login">Entrar</button>
             <?php if (isset($erro)): ?>
-            <p style="color: red;"><?php echo $erro; ?></p>
+                <p style="color: red;"><?php echo $erro; ?></p>
             <?php endif; ?>
             <p style="color: #b8b8b8;">Não possui uma conta?<a href="cadastro.php"
                     style="text-decoration: none; color: white;"> Cadastre-se</a></p>
@@ -81,3 +80,4 @@
 </body>
 
 </html>
+<!-- FIM HTML -->

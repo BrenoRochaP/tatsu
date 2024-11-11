@@ -1,23 +1,19 @@
-
+<!-- INICIO PHP -->
 <?php
 session_start();
-include('data/conexao.php'); // Inclui conexão com o banco
+include('data/conexao.php');
 
-// Obtendo o ID do endereço
 $endereco_id = $_GET['endereco_id'];
 
-// Calcula o valor total do pedido real
 $total_pedido = 0;
 $sql = "SELECT id, preco FROM item WHERE id = ?";
 $stmt = $conn->prepare($sql);
 
-// Percorre os itens do carrinho
 foreach ($_SESSION['carrinho'] as $item_id => $quantidade) {
     $stmt->bind_param("i", $item_id);
     $stmt->execute();
     $result = $stmt->get_result();
-    
-    // Verifica se o item existe no banco de dados
+
     if ($result->num_rows > 0) {
         $item = $result->fetch_assoc();
         $preco = $item['preco'];
@@ -33,7 +29,7 @@ function gerarQRCode($valor)
 
 $qrCodeURL = gerarQRCode($total_pedido);
 ?>
-
+<!-- FIM PHP -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <link rel="icon" href="./assets/images/dragaoicone.png" type="image/x-icon">
@@ -42,6 +38,7 @@ $qrCodeURL = gerarQRCode($total_pedido);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pagamento</title>
+    <!-- INICIO CSS -->
     <style>
         body {
             background-color: rgb(18, 18, 18);
@@ -132,7 +129,9 @@ $qrCodeURL = gerarQRCode($total_pedido);
             }
         }
     </style>
+    <!-- FIM CSS -->
 </head>
+<!-- INICIO HTML -->
 
 <body>
     <div class="container">
@@ -150,3 +149,4 @@ $qrCodeURL = gerarQRCode($total_pedido);
 </body>
 
 </html>
+<!-- FIM HTML -->

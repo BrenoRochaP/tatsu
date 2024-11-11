@@ -11,38 +11,35 @@
 </head>
 
 <body>
-
-    <!-- PHP -->
+    <!-- INICIO PHP -->
     <?php
     include('data/conexao.php');
     session_start();
-    // CADASTRAR USUARIO 
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cadastrar'])) {
         $email = $_POST['email'];
         $_SESSION['email'] = $email;
 
         header("Location: index.php");
-        $nome = $_POST['nome']; //GET NOME
-        $email = $_POST['email']; //GET EMAIL
-        $senha = password_hash($_POST['senha'], PASSWORD_DEFAULT); // HASH DA SENHA
-        $data_nasc = $_POST['data_nasc']; //GET DATA DE NASCIMENTO
-        $genero = $_POST['genero']; //GET GENERO
-        $endereco = $_POST['endereco']; //GET ENDERECO
-        $estado = $_POST['estado']; //GET ESTADO
+        $nome = $_POST['nome']; 
+        $email = $_POST['email']; 
+        $senha = password_hash($_POST['senha'], PASSWORD_DEFAULT); 
+        $data_nasc = $_POST['data_nasc']; 
+        $genero = $_POST['genero']; 
+        $endereco = $_POST['endereco']; 
+        $estado = $_POST['estado']; 
     
         $sql = "INSERT INTO usuario(NOME_USUARIO, EMAIL_USUARIO, SENHA_USUARIO, DATA_NASC, GENERO, ENDERECO, ESTADO)
  
-	VALUES ('$nome', '$email', '$senha', '$data_nasc', '$genero', '$endereco', '$estado')"; //INSERÇÃO DE DADOS NA TABELA USUARIO
+	VALUES ('$nome', '$email', '$senha', '$data_nasc', '$genero', '$endereco', '$estado')";
     
-        if ($conn->query($sql) === TRUE) { //VERIFICAÇÃO E TRATAMENTO DE ERROS
+        if ($conn->query($sql) === TRUE) { 
             echo "Cadastro realizado com sucesso!";
         } else {
         }
     }
     ?>
-
     <!-- FIM PHP -->
-
+<!-- INICIO HTML -->
     <a href="index.php" class="btn" data-btn>Voltar</a>
     <br />
     <section class="container">
@@ -143,3 +140,4 @@
 </body>
 
 </html>
+<!-- FIM HTML -->

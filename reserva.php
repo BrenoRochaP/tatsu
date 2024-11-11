@@ -17,6 +17,7 @@
 </head>
 
 <body style="background-color: #000; color: #a3a3a3; font-weight: 100;">
+    <!-- INICIO CSS -->
     <style>
         .btnvoltar {
             z-index: 10;
@@ -59,14 +60,14 @@
         .btnvoltar:is(:hover, :focus-visible)::before {
             transform: translate(-50%, -50%) scale(1);
         }
-        </style>
+    </style>
+    <!-- FIM CSS -->
+    <!-- INICIO PHP -->
     <?php
-    session_start(); // Inicia a sessão
-    
-    // Verifica se a sessão está ativa
+    session_start();
+
     if (!isset($_SESSION['email'])) {
         echo '<script>alert("Você precisa estar logado para acessar esta página.");</script>';
-        // Usar exit() após echo pode prevenir o redirecionamento.
         echo '<script>window.location.href = "login.php";</script>';
         exit();
     }
@@ -93,8 +94,10 @@
     }
     ?>
     <?php
-            echo "<a href='index.php' class='btnvoltar' data-btn>Voltar</a>";
-    ?>        
+    echo "<a href='index.php' class='btnvoltar' data-btn>Voltar</a>";
+    ?>
+    <!-- FIM PHP -->
+    <!-- INICIO HTML -->
     <div class="container">
         <h1
             style="font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: 48px; text-align: center; text-transform: uppercase; background-color: #000; color: #fff; padding: 20px;">
@@ -193,34 +196,37 @@
                 </div>
             </div>
         </form>
+        <!-- FIM HTML -->
+        <!-- INICIO JS -->
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
         <script>
-        $(document).ready(function() {
-            $('#formID').slideDown();
+            $(document).ready(function () {
+                $('#formID').slideDown();
 
-            $('#save').click(function(event) {
-                event.preventDefault(); //IMPEDE O ENVIO IMEDIATO DO FORMULÁRIO
+                $('#save').click(function (event) {
+                    event.preventDefault(); //IMPEDE O ENVIO IMEDIATO DO FORMULÁRIO
 
-                $("<center><div>Reserva enviada!</div></center>").dialog({
-                    title: "Tatsu Reservas!",
-                    modal: true,
-                    buttons: {
-                        "OK": function() {
-                            $(this).dialog("close");
-                            setTimeout(function() {
-                                $('#formID')
-                                    .submit(); // ENVIA O FORMULÁRIO APÓS O FECHAMENTO DO "MODAL"
-                            }, 500); // AGUARDA 0,5 SEGUNDOS
-                        }
-                    },
-                    classes: {
-                        "ui-dialog": "ui-widget"
-                    },
-                    dialogClass: "my-dialog" // ADICIONA A CLASSE RESPONSAVEL PELA CAIXA DE DIALOG
+                    $("<center><div>Reserva enviada!</div></center>").dialog({
+                        title: "Tatsu Reservas!",
+                        modal: true,
+                        buttons: {
+                            "OK": function () {
+                                $(this).dialog("close");
+                                setTimeout(function () {
+                                    $('#formID')
+                                        .submit(); // ENVIA O FORMULÁRIO APÓS O FECHAMENTO DO "MODAL"
+                                }, 500); // AGUARDA 0,5 SEGUNDOS
+                            }
+                        },
+                        classes: {
+                            "ui-dialog": "ui-widget"
+                        },
+                        dialogClass: "my-dialog" // ADICIONA A CLASSE RESPONSAVEL PELA CAIXA DE DIALOG
+                    });
                 });
             });
-        });
         </script>
+        <!-- FIM JS -->
     </div>
 
 </body>

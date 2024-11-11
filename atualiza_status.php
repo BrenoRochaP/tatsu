@@ -1,11 +1,11 @@
+<!-- INICIO PHP -->
 <?php
 session_start();
 include 'data/conexao.php';
 
-// Atualizar status do pedido
 if (isset($_POST['pedido_id']) && isset($_POST['status'])) {
     $pedido_id = intval($_POST['pedido_id']);
-    $status = $_POST['status']; // 'pago' ou 'entregue'
+    $status = $_POST['status'];
 
     $sql = "UPDATE pedidos SET status = ? WHERE id = ?";
     $stmt = $conn->prepare($sql);
@@ -16,3 +16,4 @@ if (isset($_POST['pedido_id']) && isset($_POST['status'])) {
     exit();
 }
 ?>
+<!-- FIM PHP -->

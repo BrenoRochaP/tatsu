@@ -1,6 +1,6 @@
-# Essential Stuff
+# LINKS ESSENCIAIS
 
-## Html import links
+## LINK IMPORTACAO HTML
 
 Google font
 
@@ -21,9 +21,9 @@ Ionicon
 
 ---
 
-## Colors
+## CORES
 
-### Background color
+### COR DE FUNDO
 
 ``` css
 --bg-purple: hsla(267, 100%, 63%, 1);
@@ -35,14 +35,14 @@ Ionicon
 --bg-oxford-blue-alpha-80: hsla(240, 63%, 13%, 0.8);
 ```
 
-### Gradient color
+### COR GRADIENTE
 
 ``` css
 --gradient-1: linear-gradient(to right bottom, hsl(299, 100%, 52%), hsl(291, 100%, 58%), hsl(283, 100%, 60%), hsl(273, 100%, 62%), hsl(262, 100%, 63%), hsl(242, 100%, 69%), hsl(223, 100%, 62%), hsl(210, 100%, 50%), hsl(203, 100%, 50%), hsl(198, 100%, 50%), hsl(192, 100%, 48%), hsl(185, 90%, 48%));
 --gradient-2: linear-gradient(90deg, transparent 0%, #9841ff 50%, transparent 100%);
 ```
 
-### Text color
+### COR DO TEXTO
 
 ``` css
 --text-white: hsla(0, 0%, 100%, 1);
@@ -51,14 +51,14 @@ Ionicon
 --text-purple: hsla(267, 100%, 63%, 1);
 ```
 
-### Border color
+### COR DA BORDA
 
 ``` css
 --border-space-cadet: hsl(240, 45%, 17%);
 --border-purple-alpha-30: hsla(267, 100%, 63%, 0.3);
 ```
 
-## Typography
+## TIPOGRAFIA
 
 ``` css
 --fontFamily-oxanium: 'Oxanium', cursive;
@@ -78,19 +78,19 @@ Ionicon
 --weight-bold: 700;
 ```
 
-## Spacing
+## ESPAÇAMENTO
 
 ``` css
 --section-spacing: 60px;
 ```
 
-## Shadow
+## SOMBRA
 
 ``` css
 --shadow: 0px 2px 5px 0px hsla(0, 0%, 0%, 0.2);
 ```
 
-## Border Radius
+## BORDER RADIUS
 
 ``` css
 --radius-circle: 50%;
@@ -98,7 +98,7 @@ Ionicon
 --radius-3: 3px;
 ```
 
-## Clip path
+## CLIP PATH
 
 ``` css
 --clip-path-1: polygon(0 0, 100% 0, 100% 0, 0 0);
@@ -112,7 +112,7 @@ Ionicon
 --clip-path-9: polygon(0 0, 90% 0, 100% 100%, 0% 100%);
 ```
 
-## Transition
+## TRANSIÇÃO
 
 ``` css
 --transition-1: 250ms ease;

@@ -1,43 +1,37 @@
+<!-- INICIO PHP -->
 <?php
-// Conexão com o banco de dados
 include('data/conexao.php');
 
-// Verificando se os dados foram enviados
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $rua = $_POST['rua']; // GET RUA
-    $numero = $_POST['numero']; // GET NÚMERO
-    $complemento = $_POST['complemento']; // GET complemento
-    $cep = $_POST['cep']; // GET CEP
-    $bairro = $_POST['bairro']; // GET BAIRRO
-    $cidade = $_POST['cidade']; // GET CIDADE
-    $estado = $_POST['estado']; // GET ESTADO
+    $rua = $_POST['rua'];
+    $numero = $_POST['numero'];
+    $complemento = $_POST['complemento'];
+    $cep = $_POST['cep'];
+    $bairro = $_POST['bairro'];
+    $cidade = $_POST['cidade'];
+    $estado = $_POST['estado'];
 
-    // INSERÇÃO DE DADOS NA TABELA ENDERECOS
     $sql = "INSERT INTO enderecos (rua, numero, complemento, cep, bairro, cidade, estado) 
             VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-    // Executando a inserção
     try {
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("sssssss", $rua, $numero, $complemento, $cep, $bairro, $cidade, $estado);
         $stmt->execute();
 
-        // Captura o ID do último endereço inserido
-        $endereco_id = mysqli_insert_id($conn); // Use esta função para mysqli
+        $endereco_id = mysqli_insert_id($conn);
 
-        // Armazenando o endereco_id na sessão
         session_start();
         $_SESSION['endereco_id'] = $endereco_id;
 
-        // Redireciona para a página de pagamento com o endereco_id
         header("Location: pagamento.php?endereco_id=" . $endereco_id);
-        exit; // Certifique-se de sair após o redirecionamento
+        exit;
     } catch (Exception $e) {
         echo "Erro ao cadastrar o endereço: " . $e->getMessage();
     }
 }
 ?>
-
+<!-- FIM PHP -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -45,6 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <title>Informações de Endereço</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- INICIO CSS -->
     <style>
         body {
             background-color: rgb(18, 18, 18);
@@ -137,7 +132,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             background-color: #660000;
         }
     </style>
+    <!-- FIM CSS -->
 </head>
+<!-- INICIO HTML -->
 
 <body>
     <div class="container">
@@ -169,15 +166,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
         </div>
     </div>
-
+    <!-- INICIO JS -->
     <script>
-        $(document).ready(function() {
-            $('#cep').on('blur', function() {
+        $(document).ready(function () {
+            $('#cep').on('blur', function () {
                 var cep = $(this).val();
                 $.ajax({
                     url: 'https://viacep.com.br/ws/' + cep + '/json/',
                     dataType: 'json',
-                    success: function(data) {
+                    success: function (data) {
                         $('#rua').val(data.logradouro);
                         $('#bairro').val(data.bairro);
                         $('#cidade').val(data.localidade);
@@ -187,6 +184,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             });
         });
     </script>
+    <!-- FIM JS -->
 </body>
+<!-- FIM HTML -->
 
 </html>

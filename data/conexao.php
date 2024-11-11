@@ -4,19 +4,15 @@ $dbName = "tatsu";
 $username = "root";
 $password = "";
 
-// Cria a conexão usando mysqli
 $conn = new mysqli($serverName, $username, $password, $dbName);
 
-// Verifica a conexão
 if ($conn->connect_error) {
     die("Falha na conexão: " . $conn->connect_error);
 } else {
 }
 
-// Defina o charset para evitar problemas com acentos e caracteres especiais
 $conn->set_charset("utf8");
 
-// SQL para criar a tabela USUARIO
 $sql_usuario = "
     CREATE TABLE IF NOT EXISTS USUARIO(
         ID_USUARIO INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -30,12 +26,10 @@ $sql_usuario = "
     );
 ";
 
-// Executa o comando para criar a tabela USUARIO
 if ($conn->query($sql_usuario) === TRUE) {
 } else {
 }
 
-// SQL para criar a tabela RESERVA
 $sql_reserva = "
     CREATE TABLE IF NOT EXISTS RESERVA(
         ID_RESERVA INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -52,7 +46,6 @@ $sql_reserva = "
     );
 ";
 
-// Executa o comando para criar a tabela RESERVA
 if ($conn->query($sql_reserva) === TRUE) {
 } else {
 }
@@ -73,7 +66,6 @@ $sql_delivery = "
     );
 ";
 
-// Executa o comando para criar a tabela DELIVERY
 if ($conn->query($sql_delivery) === TRUE) {
 } else {
 }

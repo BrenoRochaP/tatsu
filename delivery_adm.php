@@ -1,7 +1,9 @@
+<!-- INICIO PHP -->
 <?php
 session_start();
 include('data/conexao.php');
 ?>
+<!-- FIM PHP -->
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -20,6 +22,7 @@ include('data/conexao.php');
     <script src="assets/js_CRUD/jquery.validationEngine-2.6.2.js"></script>
     <script src="assets/js_CRUD/jquery.validationEngine-pt.js"></script>
     <script src="assets/js_CRUD/jquery.dataTables-1.10.0.min.js"></script>
+    <!-- INICIO CSS -->
     <style>
         body {
             background-color: #121212;
@@ -126,7 +129,6 @@ include('data/conexao.php');
             transform: translate(-50%, -50%) scale(1);
         }
 
-        /* Estilos para o campo de seleção e botão de atualização */
         select[name="status"] {
             padding: 5px;
             background-color: #000;
@@ -150,7 +152,9 @@ include('data/conexao.php');
             background-color: #600000;
         }
     </style>
+    <!-- FIM CSS -->
 </head>
+<!-- INICIO HTML -->
 
 <body>
 
@@ -160,7 +164,6 @@ include('data/conexao.php');
         <h1>Pedidos Tatsu</h1>
 
         <?php
-        // Consulta SQL para obter detalhes do pedido
         $sqlSelect = "
         SELECT p.id AS pedido_id, 
                u.NOME_USUARIO AS nome_cliente, 
@@ -232,3 +235,4 @@ include('data/conexao.php');
 </body>
 
 </html>
+<!-- FIM HTML -->
