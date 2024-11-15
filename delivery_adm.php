@@ -168,7 +168,6 @@ include('data/conexao.php');
         SELECT p.id AS pedido_id, 
                u.NOME_USUARIO AS nome_cliente, 
                p.data_pedido, 
-               p.total AS total_pedido,
                e.rua AS endereco_pedido, 
                e.numero AS numero_casa, 
                e.bairro, 
@@ -193,6 +192,7 @@ include('data/conexao.php');
                     <th>Endereço</th>
                     <th>Status de Pagamento</th>
                     <th>Status</th>
+                    <th>Itens e Quantidade</th>
                     <th>Atualizar Situação</th>
                 </tr>
             </thead>
@@ -200,20 +200,61 @@ include('data/conexao.php');
 
         if ($stmt->num_rows > 0) {
             while ($row = $stmt->fetch_assoc()) {
-                $total_pedido = isset($row["total_pedido"]) ? number_format($row["total_pedido"], 2, ',', '.') : 'Total não disponível';
-                $endereco_pedido = isset($row['endereco_pedido']) ? $row['endereco_pedido'] : 'Rua não disponível';
+                $pedido_id = $row["pedido_id"];
 
+                // Formatar o endereço completo
+                $endereco_completo = isset($row['endereco_pedido']) ? $row['endereco_pedido'] . ", " : '';
+                $endereco_completo .= isset($row['numero_casa']) ? $row['numero_casa'] . ", " : '';
+                $endereco_completo .= isset($row['bairro']) ? $row['bairro'] . ", " : '';
+                $endereco_completo .= isset($row['cidade']) ? $row['cidade'] : 'Cidade não disponível';
+
+                // Consultar os itens do pedido e calcular o total
+                $sqlItens = "
+                SELECT i.nome AS nome_item, 
+                       ip.quantidade,
+                       i.preco
+                FROM itens_pedido ip
+                JOIN item i ON ip.item_id = i.id
+                WHERE ip.pedido_id = ?
+                ";
+                $stmt_itens = $conn->prepare($sqlItens);
+                $stmt_itens->bind_param("i", $pedido_id);
+                $stmt_itens->execute();
+                $result_itens = $stmt_itens->get_result();
+
+                // Preparar os itens para exibição e calcular o total
+                $itens_display = [];
+                $total_pedido_calculado = 0;
+                while ($item_row = $result_itens->fetch_assoc()) {
+                    $item_nome = $item_row['nome_item'];
+                    $quantidade = $item_row['quantidade'];
+                    $preco = $item_row['preco'];
+
+                    // Calcular o valor total para o item
+                    $total_item = $preco * $quantidade;
+                    $total_pedido_calculado += $total_item;
+
+                    $itens_display[] = $item_nome . " (" . $quantidade . " x R$ " . number_format($preco, 2, ',', '.') . ")";
+                }
+
+                // Formatar o total
+                $total_pedido_display = number_format($total_pedido_calculado, 2, ',', '.');
+
+                $itens_display_str = implode(", ", $itens_display);
+
+                // Exibir os dados
                 echo "<tr>
-                    <td>" . (isset($row["pedido_id"]) ? htmlspecialchars($row["pedido_id"]) : 'ID não disponível') . "</td>
-                    <td>" . (isset($row["nome_cliente"]) ? htmlspecialchars($row["nome_cliente"]) : 'Cliente não disponível') . "</td>
-                    <td>" . (isset($row["data_pedido"]) ? htmlspecialchars($row["data_pedido"]) : 'Data não disponível') . "</td>
-                    <td>R$ " . $total_pedido . "</td>
-                    <td>" . $endereco_pedido . "</td>
-                    <td>" . (isset($row["status_pagamento"]) ? htmlspecialchars($row["status_pagamento"]) : 'Status de pagamento não disponível') . "</td>
-                    <td>" . (isset($row["status"]) ? htmlspecialchars($row["status"]) : 'Status não disponível') . "</td>
+                    <td>" . htmlspecialchars($row["pedido_id"]) . "</td>
+                    <td>" . htmlspecialchars($row["nome_cliente"]) . "</td>
+                    <td>" . htmlspecialchars($row["data_pedido"]) . "</td>
+                    <td>R$ " . $total_pedido_display . "</td>
+                    <td>" . $endereco_completo . "</td>
+                    <td>" . htmlspecialchars($row["status_pagamento"]) . "</td>
+                    <td>" . htmlspecialchars($row["status"]) . "</td>
+                    <td>" . ($itens_display_str ? $itens_display_str : 'Sem itens') . "</td>
                     <td>
                         <form method='POST' action='atualiza_status.php'>
-                            <input type='hidden' name='pedido_id' value='" . (isset($row["pedido_id"]) ? htmlspecialchars($row["pedido_id"]) : '') . "'>
+                            <input type='hidden' name='pedido_id' value='" . htmlspecialchars($row["pedido_id"]) . "'>
                             <select name='status'>
                                 <option value='Pendente'>Pendente</option>
                                 <option value='Enviado'>Enviado</option>
@@ -225,7 +266,7 @@ include('data/conexao.php');
                   </tr>";
             }
         } else {
-            echo "<tr><td colspan='8'>Nenhum pedido encontrado</td></tr>";
+            echo "<tr><td colspan='9'>Nenhum pedido encontrado</td></tr>";
         }
 
         echo "</tbody></table>";
